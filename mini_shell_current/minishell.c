@@ -100,7 +100,7 @@ int	fork_loop_first_child(t_bag *bag, int fd[], int fd_[], int builtin_yes_not, 
 
 int	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count)
 {
-	int fd[2];
+	int	fd[2];
 	int fd_[2];
 	int fd_redirect[2];
 	int pid;
