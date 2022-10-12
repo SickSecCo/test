@@ -52,7 +52,6 @@ int    ft_fork(t_bag *bag, t_var *var)
 
     i = 1;
 	pipe_fd = malloc(sizeof(char) * 10001);
-	// ft_var(var);
 	if (!ft_strcmp_mini(bag->mid_bag->instructions->command, "minishell"))
 	{
 		signal(SIGINT, SIG_IGN);
