@@ -19,25 +19,7 @@ int	complete_arr_execve(t_commands **instructions, int i)
 	// 	jk++;
 	// }
 	// printf("\n");
-	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 int    ft_fork(t_bag *bag, t_var *var)
 {
@@ -101,23 +83,7 @@ int    ft_fork(t_bag *bag, t_var *var)
             exit(0);
         }
         else
-		{
-        	p = execve(ft_strjoin("/bin/", bag->mid_bag->instructions->command), bag->mid_bag->instructions->arr_execve, var->var_execve);
-			if (p != 0)
-			{
-				k = 0;
-				while (k < var->count)
-				{
-					if (!ft_strcmp(var->var_name[k], "PWD"))
-						break ;
-					k++;
-				}
-				p = execve(ft_strjoin(ft_strjoin(var->var_value[k], "/"), bag->mid_bag->instructions->command), bag->mid_bag->instructions->arr_execve, var->var_execve);
-			}
-			if (p != 0)
-				execve(bag->mid_bag->instructions->command, bag->mid_bag->instructions->arr_execve, var->var_execve);
-		}
-		printf("%s: command not found\n", bag->mid_bag->instructions->command);
+			execute_command(bag, var);
 		exit(127);
     }
 	else

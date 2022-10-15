@@ -61,7 +61,6 @@ typedef struct	s_commands
 	int				*quote_end;
 	int				quote_count;
 	int				builtin_yes_not;
-	int				fd_backup;
 }	t_commands;
 
 typedef struct	s_tree
@@ -81,6 +80,14 @@ typedef struct s_bag
 	struct s_tree	*mid_bag;
 }	t_bag;
 
+typedef struct s_fork
+{
+	int pid;
+	int pid_1;
+	int pid_ex_status;
+	int pid_1_ex_status;
+	int count;
+}	t_fork;
 extern int env_error;
 
 
@@ -173,12 +180,21 @@ void	signal_handler_4(int code, siginfo_t *siginfo, void *k);
 
 char	**ft_splitto(char **array, char const *s, char c, int *starter);
 
-int		is_built_in_check(t_bag *bag, int code);
+int	is_built_in_check(t_bag *bag, int code);
 
-int		fork_loop_first_child(t_bag *bag, int fd[], int fd_[], t_var *var);
+int	fork_loop_first_child(t_bag *bag, int fd[], int fd_[], t_var *var);
 
 void	is_built_in_set(t_bag *bag, int code);
 
+int	charsep(char c, char del);
+
+int	count_chars(char *str, char del);
+
+void	write_oneword(char *dst, char *src, char del);
+
+int	strsplitwrite(char **str2, char *str, char del, int starter);
+
+int	execute_command(t_bag *bag, t_var *var);
 
 
 
