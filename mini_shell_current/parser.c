@@ -4,19 +4,21 @@ int	parse(t_bag *bag, char *input, t_var *var)
 {
 	int	commands_count;
 	int	i;
+	int	k;
 
 	i = 0;
-
-	commands_count = parse_string_pipe(bag, input);
+	bag->commands_count = parse_string_pipe(bag, input);
+	commands_count = bag->commands_count;
 	while (++i < commands_count)
 		bag->mid_bag = bag->mid_bag->prev;
 	if (commands_count > 1)
 		bag->mid_bag->pipe_yes_not = 1;
-	int k = parse_string_commands(bag->mid_bag, commands_count, var);
-	var->var_execve = malloc(sizeof(char *) * var->count);
+	k = parse_string_commands(bag->mid_bag, commands_count, var);
+	var->var_execve = malloc(sizeof(char *) * var->count + 1);
 	if (k == -1)
 		return k;
-	return (commands_count);
+	else
+		return (0);
 }
 
 int	parse_string_pipe(t_bag *bag, char *input)

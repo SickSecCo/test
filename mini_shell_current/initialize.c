@@ -21,8 +21,8 @@ void	initialize_var(t_var *var, char **envp)
 	j = 0;
 	while (envp[i] && envp[i][0] != '\0')
 		i++;
-	var->var_name = malloc(sizeof(char *) * 150);
-	var->var_value = malloc(sizeof(char *) * 150);
+	var->var_name = malloc(sizeof(char *) * 1500);
+	var->var_value = malloc(sizeof(char *) * 1500);
 	var->count = i;
 	i = 0;
 	while (i < var->count)

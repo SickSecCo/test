@@ -18,13 +18,9 @@ void	ft_check_redi(t_commands *instructions)
 	previous_red = -1;
 	k = -1;
 	protec = 0;
+	instructions->quote_count = 0;
 	while (instructions->argument[i])
 	{
-		// if (file)
-		// {
-		// 	free(file);
-		// 	file = NULL;
-		// }
 		if (i == instructions->quote_start[instructions->quote_count] && instructions->quote_flag[instructions->quote_count] != 0)
 		{
 			while (i < instructions->quote_end[instructions->quote_count] && instructions->argument)
@@ -74,11 +70,6 @@ void	ft_check_redi(t_commands *instructions)
 		}
 		else if (instructions->argument[i] == '<' && instructions->argument[i + 1] != '<' && k != 1)
 		{
-			// if (k == -1)
-			// 	k = multiple_file(instructions->argument);
-			// if (k == 1)
-			// 	i = ft_min_multiple_files(&instructions, i);
-			// else if (k == 0)
 			i = ft_min_single_file(&instructions, i);
 		}
 		else if (instructions->argument[i] == '<' && instructions->argument[i + 1] == '<')
@@ -95,15 +86,6 @@ void	ft_check_redi(t_commands *instructions)
 		instructions->heredoc_array = malloc(sizeof(char *) * 100);
 		take_inputs_loop(instructions);
 		i = 0;
-		// while (i < instructions->heredoc_string_count)
-		// 	free(instructions->heredoc_array[i++]);
-		// free(instructions->heredoc_array);
-		// instructions->heredoc_array = NULL;
-		// i = 0;
-		// while(i < instructions->delimiters_count)
-		// 	free(instructions->arr_delimiters[i++]);
-    	// free(instructions->arr_delimiters);
-		// instructions->arr_delimiters = NULL;
 	}
 	instructions->output_arg = f_arg(instructions->argument, instructions);
 	free(file);

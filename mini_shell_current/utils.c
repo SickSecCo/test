@@ -1,109 +1,6 @@
 #include "minishell.h"
 
-void	signal_handler_4(int code, siginfo_t *siginfo, void *k)
-{
-	exit(0);
-}
-
-void	signal_handler(int code, siginfo_t *siginfo, void *k)
-{
-	if(code == SIGQUIT)
-	{
-		rl_on_new_line();
-		rl_redisplay();
-	}
-	else if (code == SIGINT)
-	{
-		write(1, "\n", 1);
-		rl_replace_line("", 0);
-		rl_on_new_line();
-		rl_redisplay();
-		env_error = 130;
-	}
-}
-
-void	signal_handler_1(int code, siginfo_t *siginfo, void *k)
-{
-	if (code == SIGINT)
-		env_error = 130;
-	else
-		env_error = 131;
-	write(1, "\n", 1);
-}
-
-void	set_termios(int code)
-{
-	struct termios			new;
-	static struct termios	old;
-
-	if (code == 1)
-	{
-		tcgetattr(STDIN_FILENO, &old);
-		new = old;
-		new.c_lflag &= ~(ECHOCTL);
-		tcsetattr(STDIN_FILENO, TCSANOW, &new);
-	}
-	else
-		tcsetattr(STDIN_FILENO, TCSANOW, &old);
-}
-
-int		figure_count(void)
-{
-	int k;
-	int	j;
-
-	k = env_error;
-	j = 0;
-	while (k / 10 > 0)
-	{
-		j++;
-		k = k / 10;
-	}
-	return (j);
-}
-
-char	*ft_putnbr(char *str, int j, int k, int i)
-{
-	if (k >= 10)
-	{
-		ft_putnbr(str, j, k / 10, i - 1);
-		str[j + i] = k % 10 + 48;
-	}
-	else
-		str[j + i] = k + 48;
-	return (str);
-}
-
-int		check_inputs(t_var *var, char *input)
-{
-	static int	i;
-	if (var->inputs_count == 0)
-		var->array_of_inputs[var->inputs_count] = ft_substr(input, 0, ft_strlen(input));
-	else
-	{
-		if(!ft_strcmp(input, var->array_of_inputs[i]))
-			return(0); 
-		var->array_of_inputs[var->inputs_count] = ft_substr(input, 0, ft_strlen(input));
-		i++;
-	}
-	return (1);
-}
-
-int     ft_strcmp_mini(char *str1, char *str2)
-{
-    int i;
-
-    i = 0;
-    while (str1[i] != '\0')
-    {
-        if (!ft_strcmp(&str1[i], str2))
-           	return (0);
-        i++;
-    }
-    return(1);
-}
-
-int	ft_strcmp(const char *s1, const char *s2)
+int	ft_strcmp(char *s1, char *s2)
 {
 	int i;
 
@@ -112,13 +9,12 @@ int	ft_strcmp(const char *s1, const char *s2)
 		i++;
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
-
+ 
 void print(t_tree *bag, int commands_count)		//DEBUG
 {
 	t_tree *backup = bag;
 	static int x;
 	printf("\tENTER DEBUG\n");
-	while (commands_count > 0){
 		printf("PIPE: %d\n", x++);
 		printf("COMMAND : %s\n", bag->instructions->command);
 		printf("ARGUMENT : %s\n", bag->instructions->argument);
@@ -145,9 +41,48 @@ void print(t_tree *bag, int commands_count)		//DEBUG
 				j++;
 			}		
 		}
-		bag = bag->next;
-		commands_count--;
-	}
 	printf("\tEXIT DEBUG\n");
 	bag = backup;
+}
+
+int	strsplitwrite_(char **str2, char *str, char del, int starter)
+{
+	int	i;
+	int	j;
+	static int x;
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (charsep(str[i], del) == 1)
+			i++;
+		else
+		{
+			x++;
+			j = 0;
+			while (charsep(str[i + j], del) == 0)
+			j++;
+			str2[starter] = (char *)malloc(sizeof(char) * (j + 1));
+			write_oneword(str2[starter], str + i, del);
+			i = i + j;
+			starter++;
+		}
+	}
+	return (starter - 1);
+}
+
+char	**split_basic(char *s, char c, int *starter)
+{
+	int		chars;
+	int 	count;
+	char	**array;
+	char *str;
+
+	count = *starter;
+	if (s == NULL)
+		return (NULL);
+	chars = count_chars(s, c);
+	array = malloc(sizeof(char *) * (chars));
+	count = strsplitwrite_(array, s, c, count);
+	*starter = count;
+	return (array);
 }

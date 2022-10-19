@@ -12,30 +12,6 @@
 
 #include "minishell.h"
 
-// void	ft_var(t_var *var)
-// {
-// 	int		i;
-// 	char	*temp;
-// 	char	*placeholder;
-
-// 	i = 0;
-// 	while (i < var->count)
-// 	{
-// 		if (var->var_name[i][0] != '\0')
-// 		{
-// 			temp = ft_strjoin(var->var_name[i], "=");
-// 			if (!ft_strcmp(var->var_name[i], "SHLVL"))
-// 				placeholder = ft_itoa(ft_atoi(var->var_value[i]) + 1);
-// 			else
-// 				placeholder = ft_strdup(var->var_value[i]);
-// 			var->var_execve[i] = ft_strjoin(temp, placeholder);
-// 		}
-// 		free(temp);
-// 		free(placeholder);
-// 		i++;
-// 	}
-// }
-
 int	ft_set_x(t_var *var, int i, char *str)
 {
 	int		k;
@@ -84,11 +60,11 @@ char	*ft_var2(t_var *var, t_commands *instruction, char *str, int *count)
 			if (str[index[0]] == '$' && str[index[0] + 1] == '?')
 			{
 				index[1] += figure_count();
-				dest = ft_putnbr(dest, index[1], env_error, 0);
+				ft_putnbr(&dest, index[1], env_error, 0);
 				index[0] += 2;
 				index[1]++;
 			}
-			if (count[index[3]] == var->count)
+			else if (count[index[3]] == var->count)
 			{
 				if (str[index[0]] == '$' && str[index[0] + 1] == '\0')
 				{
@@ -164,4 +140,26 @@ void	ft_var_change(t_var *var, int i)
 {
 	free(var->var_value[i]);
 	var->var_value[i] = ft_strdup(var->value);
+}
+
+void	ft_var(t_var *var)
+{
+	int		i;
+	char	*temp;
+	char	*placeholder;
+
+	i = 0;
+	while (i < var->count)
+	{
+		temp = ft_strjoin(var->var_name[i], "=");
+		if (!ft_strcmp(var->var_name[i], "SHLVL"))
+			placeholder = ft_itoa(ft_atoi(var->var_value[i]) + 1);
+		else
+			placeholder = ft_strdup(var->var_value[i]);
+		var->var_execve[i] = ft_strjoin(temp, placeholder);
+		free(temp);
+		free(placeholder);
+		i++;
+	}
+	var->var_execve[i] = NULL;
 }

@@ -77,12 +77,15 @@ void	take_inputs_loop(t_commands *instructions)
 	}
 	else
 		waitpid(pid, &pid_status, 0);
-	printf("PID : %d\n", pid_status);
-	// if (pid_status == 0)
-	// 	return ;
 	prompt = NULL;
 	s = NULL;
-	//rimetti a posto i segnali;
+	struct sigaction	mysig_restore;
+
+	sigemptyset(&mysig_restore.sa_mask);
+	mysig_restore.sa_flags = 0;
+	mysig_restore.sa_sigaction = signal_handler;
+	sigaction(SIGINT, &mysig_restore, NULL);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 int	take_delimiters(t_commands **instructions, int i)
@@ -189,7 +192,7 @@ char	*f_arg(char *input, t_commands *instruction)
 				temp[j] = input[i];
 				j++;
 				i++;
-			}
+			} 
 			instruction->quote_end[l] = i - x - 1;printf("instruction->quote_end[l] : %d\n", instruction->quote_end[l]);
 			if (input[i] == '\"')
 				i++;
