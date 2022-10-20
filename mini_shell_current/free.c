@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:24 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 19:50:24 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	free_while(t_bag *bag)
@@ -14,7 +26,8 @@ void	free_while(t_bag *bag)
 	{
 		while (bag->mid_bag->instructions->arr_execve_index > 0)
 		{
-			free(bag->mid_bag->instructions->arr_execve[bag->mid_bag->instructions->arr_execve_index - 1]);
+			free(bag->mid_bag->instructions->arr_execve
+			[bag->mid_bag->instructions->arr_execve_index - 1]);
 			bag->mid_bag->instructions->arr_execve_index--;
 		}
 	}
@@ -23,17 +36,17 @@ void	free_while(t_bag *bag)
 	bag->mid_bag->instructions = NULL;
 }
 
-void    loop_free(t_var *var, t_bag *bag, int commands_count2)
+void	loop_free(t_var *var, t_bag *bag, int commands_count2)
 {
 	int	i;
 
-	while(commands_count2 > 0)
+	while (commands_count2 > 0)
 	{
 		if (bag->mid_bag->instructions->file_input)
 			free(bag->mid_bag->instructions->file_input);
 		if (bag->mid_bag->instructions->file_output)
 			free(bag->mid_bag->instructions->file_output);
-		free_while(bag);		
+		free_while(bag);
 		if (--commands_count2 > 0)
 		{
 			bag->mid_bag = bag->mid_bag->prev;
@@ -59,8 +72,8 @@ void	free_no_input_2(t_bag *bag, t_var *var, int i)
 		free(var->var_value[i]);
 		i++;
 	}
-	free(var->name);	// forse
-	free(var->value);	// forse
+	free(var->name);
+	free(var->value);
 	free(bag->mid_bag);
 	free(bag);
 	free(var->var_value);
@@ -77,7 +90,7 @@ void	free_no_input_2(t_bag *bag, t_var *var, int i)
 
 void	free_no_input(t_bag *bag, t_var *var, char *s, char *prompt)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	free(s);

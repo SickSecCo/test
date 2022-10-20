@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:41 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 20:56:30 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	parse(t_bag *bag, char *input, t_var *var)
@@ -70,7 +82,7 @@ int	parse_string_commands(t_tree *bag, int commands_count, t_var *var)
 	while (commands_count > 0)
 	{
 		i = 0;
-		bag = initialize_instructions(bag, commands_count);
+		bag = initialize_instructions(bag);
 		while (bag->raw_command[i] == ' ')
 			i++;
 		j = i;
@@ -113,7 +125,6 @@ int	check_quotes(t_commands *instruction)
 {
 	int		i;
 	int		j;
-	int		l;
 	int		count;
 	int		type;
 
@@ -121,7 +132,6 @@ int	check_quotes(t_commands *instruction)
 	j = 0;
 	count = 0;
 	type = -1;
-	l = 0;
 	while (instruction->argument[i])
 	{
 		if (instruction->argument[i] == '\'' && type != 1)

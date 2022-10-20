@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirections_utils.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:44 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 19:50:44 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	take_inputs_loop(t_commands *instructions)
@@ -56,7 +68,7 @@ void	take_inputs_loop(t_commands *instructions)
 			}
 			free(s);
 		}
-		instructions->heredoc_fd = open("here_doc.txt", O_RDWR | O_TRUNC | O_CREAT , 0666);
+		instructions->heredoc_fd = open("h.txt", O_RDWR | O_TRUNC | O_CREAT , 0666);
 		if (instructions->heredocs_switch)
 		{
 			str_1 = ft_strdup(instructions->heredoc_array[0]);

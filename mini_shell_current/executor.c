@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:17 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 21:08:59 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char	*path_find_pwdbased(char *str, t_var *var)
 {
-	int y;
-	char *return_str;
+	int		y;
+	char	*return_str;
 
 	y = 0;
 	if (!access(str, X_OK))
@@ -28,7 +40,8 @@ char	*path_find_pwdbased(char *str, t_var *var)
 
 int	path_find_pathbased_util(char **splitted_path, char *str, int count)
 {
-	char *temp;
+	char	*temp;
+
 	while (count >= 0)
 	{
 		temp = ft_strjoin(splitted_path[count], "/");
@@ -36,7 +49,7 @@ int	path_find_pathbased_util(char **splitted_path, char *str, int count)
 		{
 			free(temp);
 			temp = NULL;
-			break;
+			break ;
 		}
 		free(temp);
 		temp = NULL;
@@ -45,36 +58,37 @@ int	path_find_pathbased_util(char **splitted_path, char *str, int count)
 	return (count);
 }
 
-char	*path_find_pathbased(char **splitted_path, char *str, char *str_, int count)
+char	*path_find_pathbased(char **spl, char *str, char *str_, int count)
 {
-	char *temp;
-	char *return_str;
-	count = path_find_pathbased_util(splitted_path, str, count);
+	char	*temp;
+	char	*return_str;
+
+	count = path_find_pathbased_util(spl, str, count);
 	if (count >= 0)
 	{
-		temp = ft_strjoin(splitted_path[count], "/");
-		return_str = ft_strjoin(temp, str); 
+		temp = ft_strjoin(spl[count], "/");
+		return_str = ft_strjoin(temp, str);
 		free(str_);
-		free(splitted_path);
+		free(spl);
 		free(temp);
-		return(return_str);
+		return (return_str);
 	}
 	else
 	{
 		free(str_);
-		free(splitted_path);
+		free(spl);
 	}
 	return (NULL);
 }
 
-
-char	*pathfinder(char *str, t_var *var, char *return_str)
+char	*pathfinder(char *str, t_var *var)
 {
-	int count;
-	char **splitted_path;
-	char *str_;
-	int k;
-	
+	int		count;
+	char	**splitted_path;
+	char	*str_;
+	int		k;
+	char	*return_str;
+
 	k = -1;
 	count = 0;
 	return_str = path_find_pwdbased(str, var);
@@ -93,73 +107,16 @@ char	*pathfinder(char *str, t_var *var, char *return_str)
 
 int	execute_command(t_bag *bag, t_var *var)
 {
-	int p;
-	int k;
-	char *str_;
-	char *str;
-	
-	k = 0;
-	str = pathfinder(bag->mid_bag->instructions->command, var, str_);
+	char	*str;
+
+	str = pathfinder(bag->mid_bag->instructions->command, var);
 	if (str == NULL)
 	{
 		printf("%s: command not found_\n", bag->mid_bag->instructions->command);
 		return (127);
 	}
-	complete_arr_execve(&bag->mid_bag->instructions, str);
+	complete_arr_execve(&bag->mid_bag->instructions);
 	execve(str, bag->mid_bag->instructions->arr_execve, var->var_execve);
 	printf("%s: command not found\n", bag->mid_bag->instructions->command);
 	return (127);
 }
-
-void	is_built_in_set(t_bag *bag, int code)
-{
-	if (code == 1)
-	{
-		if (!ft_strcmp(bag->mid_bag->instructions->command, "export")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "echo")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "unset")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "cd")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "env")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "pwd"))
-			bag->mid_bag->instructions->builtin_yes_not = 1;
-		else
-			bag->mid_bag->instructions->builtin_yes_not =  0;
-	}
-	else
-	{
-		if (!ft_strcmp(bag->mid_bag->instructions->command, "export")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "echo")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "unset")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "cd"))
-			bag->mid_bag->instructions->builtin_yes_not = 1;
-		else
-			bag->mid_bag->instructions->builtin_yes_not =  0;
-	}
-}
-
-int	is_built_in_check(t_bag *bag, int code)
-{
-	if (code == 1)
-	{
-		if (!ft_strcmp(bag->mid_bag->instructions->command, "export")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "echo")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "unset")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "cd")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "env")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "pwd"))
-			return (1);
-		else
-			return (0);
-	}
-	else
-	{
-		if (!ft_strcmp(bag->mid_bag->instructions->command, "export")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "echo")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "unset")
-		|| !ft_strcmp(bag->mid_bag->instructions->command, "cd"))
-			return (1);
-		else
-			return (0);
-	}
-}
-

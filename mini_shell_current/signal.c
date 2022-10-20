@@ -1,13 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:50 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 21:18:13 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	signal_handler_4(int code, siginfo_t *siginfo, void *k)
 {
+	(void)code;
+	(void)siginfo;
+	(void)k;
 	exit(0);
 }
 
 void	signal_handler(int code, siginfo_t *siginfo, void *k)
 {
-	if(code == SIGQUIT)
+	(void)siginfo;
+	(void)k;
+	if (code == SIGQUIT)
 	{
 		rl_on_new_line();
 		rl_redisplay();
@@ -24,6 +41,8 @@ void	signal_handler(int code, siginfo_t *siginfo, void *k)
 
 void	signal_handler_1(int code, siginfo_t *siginfo, void *k)
 {
+	(void)siginfo;
+	(void)k;
 	if (code == SIGINT)
 		env_error = 130;
 	else

@@ -2,7 +2,7 @@ NAME = minishell
 
 CC = gcc
 
-# CFLAGS = -Werror -Wall -Wextra
+CFLAGS = -Werror -Wall -Wextra
 
 RM = rm -rf
 
@@ -14,15 +14,17 @@ SOURCES =	minishell\
 			built_in\
 			var_handler\
 			fork\
+			fork_utils\
 			initialize\
 			free\
 			built_in_utils\
 			new_split\
 			built_in_2\
 			executor_utils\
+			executor_utils_2\
 			executor\
 			parser_utils\
-			signal\
+			signal
 
 DEPENDENCIES = libft/libft.a
 
@@ -55,4 +57,4 @@ re: fclean all
 
 re_everything: clear_everything all
 
-.PHONY: all clean fclean re clear_e
+.PHONY: all clean fclean re clear_everything re_everything

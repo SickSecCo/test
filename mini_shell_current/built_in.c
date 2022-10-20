@@ -1,5 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_in.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 20:09:51 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 20:09:51 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "minishell.h"
 
 int	ft_export_util(t_var *var, t_bag *bag, int i, int j)
 {
@@ -34,7 +45,7 @@ void	ft_export(t_var *var, t_bag *bag)
 	j = check_argument_export(var, bag->mid_bag);
 	i = ft_export_util(var, bag, i, j);
 	if (i == -1)
-		return;
+		return ;
 	if (!j)
 	{
 		var->var_name[var->count] = ft_strdup(var->name);
@@ -82,8 +93,18 @@ void	ft_env(t_var *var)
 	while (i < var->count)
 	{
 		if (var->var_name[i][0] != '\0')
-			printf("%s=%s\n", var->var_name[i], var->var_value[i]);		
+			printf("%s=%s\n", var->var_name[i], var->var_value[i]);
 		i++;
 	}
 	env_error = 0;
+}
+
+void	ft_pwd(void)
+{
+	char	*path;
+
+	path = malloc(sizeof(char) * 300);
+	path = getcwd(path, 300);
+	printf("%s\n", path);
+	free(path);
 }

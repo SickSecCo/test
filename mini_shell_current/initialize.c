@@ -6,7 +6,7 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/06 16:27:49 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/10 18:47:51 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/19 21:13:58 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,13 @@ void	initialize_var(t_var *var, char **envp)
 		while (envp[i][j] != '=' && envp[i][j] != '\0')
 			j++;
 		var->var_name[i] = ft_substr(envp[i], 0, j);
-		var->var_value[i] = ft_substr(envp[i], j + 1, ft_strlen(envp[i]) - (j + 1));
+		var->var_value[i] = ft_substr(envp[i], j + 1,
+				ft_strlen(envp[i]) - (j + 1));
 		i++;
 	}
 }
 
-t_tree	*initialize_instructions(t_tree *bag, int commands_count)
+t_tree	*initialize_instructions(t_tree *bag)
 {
 	bag->instructions = malloc(sizeof(t_commands));
 	bag->instructions->file_output = (NULL);

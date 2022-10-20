@@ -1,55 +1,68 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:54 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 21:19:23 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	ft_strcmp(char *s1, char *s2)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (s1[i] != '\0' && s1[i] == s2[i])
 		i++;
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
- 
-void print(t_tree *bag, int commands_count)		//DEBUG
-{
-	t_tree *backup = bag;
-	static int x;
-	printf("\tENTER DEBUG\n");
-		printf("PIPE: %d\n", x++);
-		printf("COMMAND : %s\n", bag->instructions->command);
-		printf("ARGUMENT : %s\n", bag->instructions->argument);
-		// printf("RAW_COMMAND : %s\n", bag->raw_command);
-		printf("OUTPUT_ARGUMENT : %s\n", bag->instructions->output_arg);
-		printf("FILE OUTPUT: %s\n", bag->instructions->file_output);
-		printf("FILE INPUT: %s\n", bag->instructions->file_input);
-		printf("OUTPUT TYPE: %d\n", bag->instructions->out_redirect_type);
-		printf("INPUT TYPE: %d\n", bag->instructions->in_redirect_type);
-		int j = 0;
-		printf("MAX ARRAY INDEX: %d\n", bag->instructions->arr_file_index);
-		while (j < bag->instructions->arr_file_index)
-		{
-			printf("FILE NUMERO %d: %s\n", j, bag->instructions->arr_file[j]);
-			j++;
-		}
-		j = 0;
-		printf("heredoc_string_count: %d\n", bag->instructions->heredoc_string_count);
-		if (bag->instructions->heredoc_string_count != 0)
-		{
-			while (j < bag->instructions->heredoc_string_count)
-			{
-				printf("WORDS : %s\n", bag->instructions->heredoc_array[j]);
-				j++;
-			}		
-		}
-	printf("\tEXIT DEBUG\n");
-	bag = backup;
-}
+
+// void print(t_tree *bag, int commands_count)		//DEBUG
+// {
+// 	t_tree *backup = bag;
+// 	static int x;
+// 	printf("\tENTER DEBUG\n");
+// 		printf("PIPE: %d\n", x++);
+// 		printf("COMMAND : %s\n", bag->instructions->command);
+// 		printf("ARGUMENT : %s\n", bag->instructions->argument);
+// 		// printf("RAW_COMMAND : %s\n", bag->raw_command);
+// 		printf("OUTPUT_ARGUMENT : %s\n", bag->instructions->output_arg);
+// 		printf("FILE OUTPUT: %s\n", bag->instructions->file_output);
+// 		printf("FILE INPUT: %s\n", bag->instructions->file_input);
+// 		printf("OUTPUT TYPE: %d\n", bag->instructions->out_redirect_type);
+// 		printf("INPUT TYPE: %d\n", bag->instructions->in_redirect_type);
+// 		int j = 0;
+// 		printf("MAX ARRAY INDEX: %d\n", bag->instructions->arr_file_index);
+// 		while (j < bag->instructions->arr_file_index)
+// 		{
+// 			printf("FILE NUMERO %d: %s\n", j, bag->instructions->arr_file[j]);
+// 			j++;
+// 		}
+// 		j = 0;
+// 		printf("heredoc_string_count: %d\n", bag->instructions->heredoc_string_count);
+// 		if (bag->instructions->heredoc_string_count != 0)
+// 		{
+// 			while (j < bag->instructions->heredoc_string_count)
+// 			{
+// 				printf("WORDS : %s\n", bag->instructions->heredoc_array[j]);
+// 				j++;
+// 			}		
+// 		}
+// 	printf("\tEXIT DEBUG\n");
+// 	bag = backup;
+// }
 
 int	strsplitwrite_(char **str2, char *str, char del, int starter)
 {
-	int	i;
-	int	j;
-	static int x;
+	int			i;
+	int			j;
+	static int	x;
+
 	i = 0;
 	while (str[i] != '\0')
 	{
@@ -73,9 +86,8 @@ int	strsplitwrite_(char **str2, char *str, char del, int starter)
 char	**split_basic(char *s, char c, int *starter)
 {
 	int		chars;
-	int 	count;
+	int		count;
 	char	**array;
-	char *str;
 
 	count = *starter;
 	if (s == NULL)
@@ -85,4 +97,25 @@ char	**split_basic(char *s, char c, int *starter)
 	count = strsplitwrite_(array, s, c, count);
 	*starter = count;
 	return (array);
+}
+
+void	check_command(t_bag *bag, t_var *var)
+{
+	if (!ft_strcmp(bag->mid_bag->instructions->command, "echo"))
+		ft_echo(bag->mid_bag->instructions, var);
+	else if (!ft_strcmp(bag->mid_bag->instructions->command, "cd"))
+		ft_cd(bag, var);
+	else if (!ft_strcmp(bag->mid_bag->instructions->command, "pwd"))
+		ft_pwd();
+	else if (!ft_strcmp(bag->mid_bag->instructions->command, "export"))
+		ft_export(var, bag);
+	else if (!ft_strcmp(bag->mid_bag->instructions->command, "unset"))
+		ft_unset(var, bag);
+	else if (!ft_strcmp(bag->mid_bag->instructions->command, "env"))
+		ft_env(var);
+	else if (!ft_strcmp(bag->mid_bag->instructions->command, "exit"))
+	{
+		free(var);
+		exit(0);
+	}
 }

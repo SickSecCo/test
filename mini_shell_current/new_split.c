@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   new_split.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:35 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 21:14:44 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	charsep(char c, char del)
@@ -64,14 +76,12 @@ int	strsplitwrite(char **str2, char *str, char del, int starter)
 char	**ft_splitto(char **array, char const *s, char c, int *starter)
 {
 	char	*str;
-	int		chars;
-	int 	count;
+	int		count;
 
 	count = *starter;
 	if (s == NULL)
 		return (NULL);
 	str = (char *)s;
-	chars = count_chars(str, c);
 	count = strsplitwrite(array, str, c, count);
 	*starter = count;
 	return (array);

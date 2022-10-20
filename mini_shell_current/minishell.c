@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:31 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 20:55:18 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int env_error;
 
-int	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count)
+void	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count)
 {
 	struct sigaction	sig_struct;
 
@@ -15,7 +27,6 @@ int	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count)
 
 	t_fork *f_stats;
 	int	fd[2];
-	int	fd_;
 	int	fd_2[2];
 	int	fd_backup[2];
 
@@ -28,7 +39,7 @@ int	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count)
 	f_stats->pid = fork();
 	is_built_in_set(bag, 1);
 	if (f_stats->pid == 0)
-		exit(fork_loop_first_child(bag, fd, fd_, var));
+		exit(fork_loop_first_child(bag, fd, var));
 	else
 	{
 		close(fd[1]);
@@ -51,7 +62,7 @@ int	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count)
 		if (f_stats->pid_1 == 0)
 		{
 			if (bag->mid_bag->instructions->in_redirect_type || bag->mid_bag->instructions->heredocs_switch)
-				in_redirect_fork_util(bag, fd_);
+				in_redirect_fork_util(bag->mid_bag->instructions);
 			else
 				dup2(fd[0], STDIN_FILENO);
 			if (commands_count - f_stats->count > 1 || bag->mid_bag->instructions->out_redirect_type)
@@ -87,9 +98,8 @@ int	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count)
 	free(f_stats);
 }
 
-int	main_loop_fork(t_bag *bag, t_var *var)
+void	main_loop_fork(t_bag *bag, t_var *var)
 {
-	int code;
 	struct sigaction	sig_struct;
 
 	sigemptyset(&sig_struct.sa_mask);
@@ -104,10 +114,10 @@ int	main_loop_fork(t_bag *bag, t_var *var)
 	|| !ft_strcmp(bag->mid_bag->instructions->command, "cd"))
 	{
 		check_command(bag, var);
-		return 0;
+		return ;
 	}
-	code = ft_fork(bag, var);
-	if (code != 0 && (bag->mid_bag->instructions->in_redirect_type || bag->mid_bag->instructions->out_redirect_type))
+	ft_fork(bag, var);
+	if (bag->mid_bag->instructions->in_redirect_type || bag->mid_bag->instructions->out_redirect_type)
 	{
 		bag->mid_bag->instructions->echo_option = 1;
 		ft_echo(bag->mid_bag->instructions, var);
@@ -116,7 +126,6 @@ int	main_loop_fork(t_bag *bag, t_var *var)
 
 int	main_loop_core(t_bag *bag, t_var *var, char *s)
 {
-	int commands_count;
 	int commands_count2;
 	int	check;
 
@@ -210,7 +219,8 @@ int main(int argc, char **argv, char **envp)
 	sigemptyset(&mysig.sa_mask);
 	mysig.sa_flags = 0;
 	mysig.sa_sigaction = signal_handler;
-
+	(void)argv;
+	(void)argc;
 	set_termios(1);
 
 	main_loop(mysig, envp);

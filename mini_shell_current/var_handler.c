@@ -21,7 +21,9 @@ int	ft_set_x(t_var *var, int i, char *str)
 
 	j = 0;
 	k = 0;
-	while ((str[i + j] >= 48 && str[i + j] <= 57) || (str[i + j] >= 65 && str[i + j] <= 90) || (str[i + j] >= 97 && str[i + j] <= 122))
+	while ((str[i + j] >= 48 && str[i + j] <= 57)
+		|| (str[i + j] >= 65 && str[i + j] <= 90)
+		|| (str[i + j] >= 97 && str[i + j] <= 122))
 		j++;
 	dest = ft_substr(str, i, j);
 	while (k < var->count)
@@ -73,8 +75,8 @@ char	*ft_var2(t_var *var, t_commands *instruction, char *str, int *count)
 				}
 				index[0]++;
 				while ((str[index[0]] >= 48 && str[index[0]] <= 57)
-						|| (str[index[0]] >= 65 && str[index[0]] <= 90)
-							|| (str[index[0]] >= 97 && str[index[0]] <=122))
+					|| (str[index[0]] >= 65 && str[index[0]] <= 90)
+					|| (str[index[0]] >= 97 && str[index[0]] <= 122))
 					index[0]++;
 				if (str[index[0]] == '\0')
 					break ;
@@ -85,8 +87,8 @@ char	*ft_var2(t_var *var, t_commands *instruction, char *str, int *count)
 			{
 				index[0]++;
 				while ((str[index[0]] >= 48 && str[index[0]] <= 57)
-						|| (str[index[0]] >= 65 && str[index[0]] <= 90)
-							|| (str[index[0]] >= 97 && str[index[0]] <=122))
+					|| (str[index[0]] >= 65 && str[index[0]] <= 90)
+					|| (str[index[0]] >= 97 && str[index[0]] <= 122))
 					index[0]++;
 				while (var->var_value[count[index[3]]][index[4]] != '\0')
 				{	
@@ -109,7 +111,7 @@ char	*ft_var2(t_var *var, t_commands *instruction, char *str, int *count)
 	return (dest);
 }
 
-char	*ft_var_output(char *str, t_commands *instruction, t_var *var, int i)
+char	*ft_var_out(char *str, t_commands *instruction, t_var *var, int i)
 {
 	char	*dest;
 	int		*count;

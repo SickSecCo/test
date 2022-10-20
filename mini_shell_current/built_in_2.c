@@ -1,19 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_in_2.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:02 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 20:00:12 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-void    ft_pwd()
-{
-    char    *path;
-
-    path = malloc(sizeof(char) * 300);
-    path = getcwd(path, 300);
-    printf("%s\n", path);
-	free(path);
-}
 
 void	ft_cd_util(t_var *var)
 {
 	char	*str;
 	int		i;
+
 	i = -1;
 	while (++i < var->count)
 	{
@@ -31,21 +34,22 @@ void	ft_cd_util(t_var *var)
 	free(str);
 }
 
-void    ft_cd(t_bag *bag, t_var *var)
+void	ft_cd(t_bag *bag, t_var *var)
 {
-    if (chdir(bag->mid_bag->instructions->output_arg))
-    {
-        printf("No such file or directory\n");
+	if (chdir(bag->mid_bag->instructions->output_arg))
+	{
+		printf("No such file or directory\n");
 		bag->err_env_err = 1;
 		env_error = 1;
-    }
+	}
 	else
 		ft_cd_util(var);
 }
 
 void	ft_echo_util(t_commands *instruction, char *echo_print)
 {
-	int 	fd;
+	int	fd;
+
 	if (instruction->echo_option == 1)
 	{
 		fd = open(instruction->file_output, O_RDWR | O_TRUNC | O_CREAT, 0666);
@@ -65,7 +69,8 @@ void	ft_echo_util(t_commands *instruction, char *echo_print)
 
 void	ft_echo_util_1(t_commands *instruction, char *echo_print)
 {
-	int 	fd;
+	int	fd;
+
 	if (instruction->echo_option == 1)
 	{
 		fd = open(instruction->file_output, O_RDWR | O_APPEND | O_CREAT, 0666);
@@ -83,11 +88,12 @@ void	ft_echo_util_1(t_commands *instruction, char *echo_print)
 	}
 }
 
-void    ft_echo(t_commands *instruction, t_var *var)
+void	ft_echo(t_commands *instruction, t_var *var)
 {
 	char	*echo_print;
+
 	if (!ft_strcmp(instruction->command, "echo"))
-		echo_print = ft_var_output(instruction->output_arg, instruction, var, 0);
+		echo_print = ft_var_out(instruction->output_arg, instruction, var, 0);
 	else
 		echo_print = ft_strdup(instruction->output_arg);
 	if (instruction->out_redirect_type != 0 && echo_print != NULL)
@@ -97,10 +103,10 @@ void    ft_echo(t_commands *instruction, t_var *var)
 		else if (instruction->out_redirect_type == 2)
 			ft_echo_util_1(instruction, echo_print);
 	}
-    else
+	else
 	{
 		if (instruction->echo_option == 1)
-        	printf("%s", echo_print);
+			printf("%s", echo_print);
 		else
 			printf("%s\n", echo_print);
 	}

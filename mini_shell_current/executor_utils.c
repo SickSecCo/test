@@ -1,10 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/19 19:50:13 by fgiulian          #+#    #+#             */
+/*   Updated: 2022/10/19 21:02:45 by fgiulian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-int	in_redirect_fork_util(t_bag *bag, int fd_)
+void	in_redirect_fork_util(t_commands *instructions)
 {
-	if (bag->mid_bag->instructions->file_input || bag->mid_bag->instructions->in_redirect_type != 2)
+	int	fd_;
+
+	if (instructions->file_input || instructions->in_redirect_type != 2)
 	{
-		fd_ = open(bag->mid_bag->instructions->file_input, O_RDONLY, 0666);
+		fd_ = open(instructions->file_input, O_RDONLY, 0666);
 		if (fd_ > 0)
 		{
 			dup2(fd_, STDIN_FILENO);
@@ -12,31 +26,32 @@ int	in_redirect_fork_util(t_bag *bag, int fd_)
 		}
 		else
 		{
-			printf("%s: No such file or directory\n", bag->mid_bag->instructions->file_input);
-			return (0);
+			printf("%s: No such file or directory\n", instructions->file_input);
+			return ;
 		}
 	}
-	else if (bag->mid_bag->instructions->in_redirect_type == 2)
+	else if (instructions->in_redirect_type == 2)
 	{
-		bag->mid_bag->instructions->heredoc_fd = open("here_doc.txt", O_RDONLY, 0666);
-		if (bag->mid_bag->instructions->heredoc_fd)
+		instructions->heredoc_fd = open("h.txt", O_RDONLY, 0666);
+		if (instructions->heredoc_fd)
 		{
-			dup2(bag->mid_bag->instructions->heredoc_fd, STDIN_FILENO);
-			close(bag->mid_bag->instructions->heredoc_fd);
+			dup2(instructions->heredoc_fd, STDIN_FILENO);
+			close(instructions->heredoc_fd);
 		}
 	}
 }
 
-int	read_util(t_bag *bag, int fd[])
+void	read_util(t_bag *bag, int fd[])
 {
-	int i;
-	char *str;
-	char *pipe_fd;
+	int		i;
+	char	*str;
+	char	*pipe_fd;
 
 	pipe_fd = malloc(sizeof(char) * 10001);
 	i = 1;
-	memset(bag->mid_bag->instructions->output_arg, 0, ft_strlen(bag->mid_bag->instructions->output_arg));
-	while(i > 0)
+	ft_memset(bag->mid_bag->instructions->output_arg, 0,
+		ft_strlen(bag->mid_bag->instructions->output_arg));
+	while (i > 0)
 	{
 		i = read(fd[0], pipe_fd, 10000);
 		pipe_fd[i] = '\0';
@@ -51,7 +66,7 @@ int	read_util(t_bag *bag, int fd[])
 	free(pipe_fd);
 }
 
-int	read_fork_pipe(t_bag *bag, int fd[], int *already_closed, t_var *var)
+void	read_fork_pipe(t_bag *bag, int fd[], int *already_closed, t_var *var)
 {
 	check_command(bag, var);
 	if (bag->mid_bag->instructions->out_redirect_type)

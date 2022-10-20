@@ -31,7 +31,7 @@ typedef struct s_var
 	char	*name;
 	char	*value;
 	char	**array_of_inputs;
-	unsigned int	inputs_count;
+	int		inputs_count;
 }	t_var;
 
 typedef struct	s_commands
@@ -143,13 +143,13 @@ void	ft_var_change(t_var *var, int i);
 
 void	check_arguments_unset(t_var *var, t_tree *bag);
 
-char	*ft_var_output(char *str, t_commands *instruction, t_var *var, int i);
+char	*ft_var_out(char *str, t_commands *instruction, t_var *var, int i);
 
 int		check_inputs(t_var *var, char *input);
 
 int		parse(t_bag *bag, char *input, t_var *var);
 
-int		ft_fork(t_bag *bag, t_var *var);
+void	ft_fork(t_bag *bag, t_var *var);
 
 void	set_termios(int code);
 
@@ -163,19 +163,19 @@ void	initialize_var(t_var *var, char **envp);
 
 void    loop_free(t_var *var, t_bag *bag, int commands_count2);
 
-int		complete_arr_execve(t_commands **instructions, char *s);
+void	complete_arr_execve(t_commands **instructions);
 
 void	signal_handler_1(int code, siginfo_t *siginfo, void *k);
 
-t_tree	*initialize_instructions(t_tree *bag, int commands_count);
+t_tree	*initialize_instructions(t_tree *bag);
 
 int		check_argument_export_exit(t_tree *bag, char *string, int i);
 
 void	free_no_input(t_bag *bag, t_var *var, char *s, char *prompt);
 
-int	main_loop_core(t_bag *bag, t_var *var, char *s);
+int		main_loop_core(t_bag *bag, t_var *var, char *s);
 
-char	*ft_putnbr(char **str, int j, int k, int i);
+void	ft_putnbr(char **str, int j, int k, int i);
 
 void	signal_handler_4(int code, siginfo_t *siginfo, void *k);
 
@@ -183,7 +183,7 @@ char	**ft_splitto(char **array, char const *s, char c, int *starter);
 
 int		is_built_in_check(t_bag *bag, int code);
 
-int		fork_loop_first_child(t_bag *bag, int fd[], int fd_, t_var *var);
+int		fork_loop_first_child(t_bag *bag, int fd[], t_var *var);
 
 void	is_built_in_set(t_bag *bag, int code);
 
@@ -197,13 +197,13 @@ int		strsplitwrite(char **str2, char *str, char del, int starter);
 
 int		execute_command(t_bag *bag, t_var *var);
 
-int		read_util(t_bag *bag, int fd[]);
+void	read_util(t_bag *bag, int fd[]);
 
-int		in_redirect_fork_util(t_bag *bag, int fd_);
+void	in_redirect_fork_util(t_commands *instructions);
 
 int		fork_loop_second_child(t_bag *bag, int fd[], int fd_2[], t_var *var);
 
-int		read_fork_pipe(t_bag *bag, int fd[], int *already_closed, t_var *var);
+void	read_fork_pipe(t_bag *bag, int fd[], int *already_closed, t_var *var);
 
 char	**split_basic(char *s, char c, int *starter);
 
@@ -214,5 +214,13 @@ void	set_signal(void);
 void	set_signal(void);
 
 void	set_env_error(t_bag *bag, int wstatus);
+
+void	is_built_in_set(t_bag *bag, int code);
+
+int		is_built_in_check(t_bag *bag, int code);
+
+int		fork_single_command(int link[], t_bag *bag, t_var *var);
+
+void	fd_backup_(int fd[], int i);
 
 #endif
