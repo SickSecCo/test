@@ -6,7 +6,7 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 19:50:31 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/19 20:55:18 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/20 20:41:02 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,16 @@ void	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count
 	int	fd_2[2];
 	int	fd_backup[2];
 
+	int	pid, count, pid_1, pid_1_ex_status;
+
 	fd_backup[0] = dup(STDOUT_FILENO);
 	fd_backup[1] = dup(STDIN_FILENO);
 	f_stats = malloc(sizeof(t_fork));
 	f_stats->count = 1;
 	bag->mid_bag->instructions->builtin_yes_not = 0;
 	pipe(fd);
-	f_stats->pid = fork();
 	is_built_in_set(bag, 1);
+	f_stats->pid = fork();
 	if (f_stats->pid == 0)
 		exit(fork_loop_first_child(bag, fd, var));
 	else
@@ -67,7 +69,8 @@ void	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count
 				dup2(fd[0], STDIN_FILENO);
 			if (commands_count - f_stats->count > 1 || bag->mid_bag->instructions->out_redirect_type)
 				dup2(fd_2[1], STDOUT_FILENO);
-			exit(fork_loop_second_child(bag, fd, fd_2, var));
+			int a = (fork_loop_second_child(bag, fd, fd_2, var));
+			exit(a);
 		}
 		else
 		{
@@ -75,21 +78,19 @@ void	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count
 			waitpid(f_stats->pid_1, &f_stats->pid_1_ex_status, 0);
 			if (!bag->mid_bag->instructions->out_redirect_type)
 				dup2(fd_2[0], fd[0]);
+			close(fd_2[0]);
 			if (bag->mid_bag->instructions->out_redirect_type && !bag->mid_bag->instructions->builtin_yes_not)
 			{
-				read_util(bag, fd_2);
-				close(fd_2[0]);
+				read_util(bag, fd);
 				bag->mid_bag->instructions->echo_option = 1;
 				ft_echo(bag->mid_bag->instructions, var);
 			}
-			else
-				close(fd_2[0]);
 			f_stats->count++;
 		}
 	}
 	close(fd[0]);
-	dup2(fd_backup[0], STDOUT_FILENO);
 	dup2(fd_backup[1], STDIN_FILENO);
+	dup2(fd_backup[0], STDOUT_FILENO);
 	close(fd_backup[0]);
 	close(fd_backup[1]);
 	if (env_error != 130 && env_error != 131)
@@ -107,7 +108,6 @@ void	main_loop_fork(t_bag *bag, t_var *var)
 	sig_struct.sa_sigaction = signal_handler_1;
 	sigaction(SIGINT, &sig_struct, NULL);
 	sigaction(SIGQUIT, &sig_struct, NULL);
-	// ft_var(var);
 	if (!ft_strcmp(bag->mid_bag->instructions->command, "export")
 	|| !ft_strcmp(bag->mid_bag->instructions->command, "echo")
 	|| !ft_strcmp(bag->mid_bag->instructions->command, "unset")
@@ -147,7 +147,6 @@ int	main_loop_core(t_bag *bag, t_var *var, char *s)
 		loop_free(var, bag, commands_count2);
 		return(-1);
 	}
-
 	if (env_error == 130 && bag->mid_bag->instructions->in_redirect_type == 2)
 	{
 		bag->err_env_err = 1;

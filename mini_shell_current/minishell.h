@@ -179,7 +179,7 @@ void	ft_putnbr(char **str, int j, int k, int i);
 
 void	signal_handler_4(int code, siginfo_t *siginfo, void *k);
 
-char	**ft_splitto(char **array, char const *s, char c, int *starter);
+char	**ft_splitto(char **array, char *s, char c, int *starter);
 
 int		is_built_in_check(t_bag *bag, int code);
 

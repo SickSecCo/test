@@ -6,7 +6,7 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 19:50:17 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/19 21:08:59 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/20 20:49:50 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ char	*path_find_pwdbased(char *str, t_var *var)
 {
 	int		y;
 	char	*return_str;
+	char	*temp;
 
 	y = 0;
 	if (!access(str, X_OK))
@@ -29,12 +30,14 @@ char	*path_find_pwdbased(char *str, t_var *var)
 			break ;
 		y++;
 	}
-	return_str = ft_strdup(var->var_value[y]);
-	if (!access(ft_strjoin(return_str, str), X_OK))
+	temp = ft_strdup(var->var_value[y]);
+	if (!access(ft_strjoin(temp, str), X_OK))
 	{
-		return_str = ft_strjoin(return_str, str);
+		return_str = ft_strjoin(temp, str);
+		free(temp);
 		return (return_str);
 	}
+	free(temp);
 	return (NULL);
 }
 
@@ -112,7 +115,7 @@ int	execute_command(t_bag *bag, t_var *var)
 	str = pathfinder(bag->mid_bag->instructions->command, var);
 	if (str == NULL)
 	{
-		printf("%s: command not found_\n", bag->mid_bag->instructions->command);
+		printf("%s: command not found\n", bag->mid_bag->instructions->command);
 		return (127);
 	}
 	complete_arr_execve(&bag->mid_bag->instructions);

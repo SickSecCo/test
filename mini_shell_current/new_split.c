@@ -6,7 +6,7 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 19:50:35 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/19 21:14:44 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/20 20:21:31 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,7 @@ int	strsplitwrite(char **str2, char *str, char del, int starter)
 		{
 			j = 0;
 			while (charsep(str[i + j], del) == 0)
-			j++;
-			free(str2[starter]);
+				j++;
 			str2[starter] = (char *)malloc(sizeof(char) * (j + 1));
 			write_oneword(str2[starter], str + i, del);
 			i = i + j;
@@ -73,16 +72,14 @@ int	strsplitwrite(char **str2, char *str, char del, int starter)
 	return (starter);
 }
 
-char	**ft_splitto(char **array, char const *s, char c, int *starter)
+char	**ft_splitto(char **array, char *s, char c, int *starter)
 {
-	char	*str;
 	int		count;
 
 	count = *starter;
 	if (s == NULL)
 		return (NULL);
-	str = (char *)s;
-	count = strsplitwrite(array, str, c, count);
+	count = strsplitwrite(array, s, c, count);
 	*starter = count;
 	return (array);
 }

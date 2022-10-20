@@ -6,7 +6,7 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 19:50:44 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/19 19:50:44 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/20 17:52:44 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	take_inputs_loop(t_commands *instructions)
 {
 	int l = 0, count = 0;
-	char *prompt = "> ";
+	char *prompt;
 	char *s;
 	int a = 0;
 	char *string;
@@ -23,6 +23,7 @@ void	take_inputs_loop(t_commands *instructions)
 	char *str, *str_1;
 	struct sigaction	sig_here_doc;
 
+	prompt = ft_strdup("> ");
 	sigemptyset(&sig_here_doc.sa_mask);
 	sig_here_doc.sa_flags = 0;
 	sig_here_doc.sa_sigaction = signal_handler_1;
@@ -89,6 +90,7 @@ void	take_inputs_loop(t_commands *instructions)
 	}
 	else
 		waitpid(pid, &pid_status, 0);
+	free(prompt);
 	prompt = NULL;
 	s = NULL;
 	struct sigaction	mysig_restore;

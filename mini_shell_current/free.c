@@ -33,7 +33,6 @@ void	free_while(t_bag *bag)
 	}
 	free(bag->mid_bag->instructions->arr_execve);
 	free(bag->mid_bag->instructions);
-	bag->mid_bag->instructions = NULL;
 }
 
 void	loop_free(t_var *var, t_bag *bag, int commands_count2)
@@ -62,6 +61,7 @@ void	loop_free(t_var *var, t_bag *bag, int commands_count2)
 	}
 	free(var->var_execve);
 	var->var_execve = NULL;
+	unlink("h.txt");
 }
 
 void	free_no_input_2(t_bag *bag, t_var *var, int i)
