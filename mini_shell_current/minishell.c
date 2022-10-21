@@ -30,8 +30,6 @@ void	main_loop_fork_multiple_commands(t_bag *bag, t_var *var, int commands_count
 	int	fd_2[2];
 	int	fd_backup[2];
 
-	int	pid, count, pid_1, pid_1_ex_status;
-
 	fd_backup[0] = dup(STDOUT_FILENO);
 	fd_backup[1] = dup(STDIN_FILENO);
 	f_stats = malloc(sizeof(t_fork));
