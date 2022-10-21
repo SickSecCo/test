@@ -12,87 +12,76 @@
 
 #include "minishell.h"
 
-void	take_inputs_loop(t_commands *instructions)
+
+struct sigaction	set_signal_quit_ingore(void)
 {
-	int l = 0, count = 0;
-	char *prompt;
-	char *s;
-	int a = 0;
-	char *string;
-	int pid, pid_status;
-	char *str, *str_1;
 	struct sigaction	sig_here_doc;
 
-	prompt = ft_strdup("> ");
 	sigemptyset(&sig_here_doc.sa_mask);
 	sig_here_doc.sa_flags = 0;
 	sig_here_doc.sa_sigaction = signal_handler_1;
 	sigaction(SIGINT, &sig_here_doc, NULL);
 	signal(SIGQUIT, SIG_IGN);
-	pid = fork();
-	if (pid == 0)
+	return (sig_here_doc);
+}
+
+
+void take_inputs_util_1(int *count, t_commands *instructions, int *a, char *s)
+{
+	if (instructions->delimiters_count >= 2)
 	{
-		sig_here_doc.sa_sigaction = signal_handler_4;
-		sigaction(SIGINT, &sig_here_doc, NULL);
-		while (count < instructions->delimiters_count)
-		{
-			s = readline(prompt);
-			if (!s)
-				break ;
-			if (ft_strcmp(s, instructions->arr_delimiters[count]) == 0)
-			{
-				if (instructions->delimiters_count >= 2)
-				{
-					if (!ft_strcmp(s, instructions->arr_delimiters[instructions->delimiters_count - 2]))
-						a++;
-				}
-				else
-					if (!ft_strcmp(s, instructions->arr_delimiters[instructions->delimiters_count - 1]))
-						a++;
-				count++;
-			}
-			else if (instructions->delimiters_count < 2 || (instructions->delimiters_count >= 2 && a > 0))
-			{
-				instructions->heredocs_switch = 1;
-				string = ft_strjoin(s, "\n");
-				if (strlen(s) <= 0)
-				{
-					instructions->heredoc_array[instructions->heredoc_string_count] = ft_strdup(string);
-					instructions->heredoc_string_count++;
-				}
-				else
-				{
-					instructions->heredoc_array[instructions->heredoc_string_count] = ft_strdup(string);
-					instructions->heredoc_string_count++;
-				}
-				free(string);
-			}
-			free(s);
-		}
-		instructions->heredoc_fd = open("h.txt", O_RDWR | O_TRUNC | O_CREAT , 0666);
-		if (instructions->heredocs_switch)
-		{
-			str_1 = ft_strdup(instructions->heredoc_array[0]);
-			l++;
-			while (l < instructions->heredoc_string_count)
-			{
-				str = ft_strjoin(str_1, instructions->heredoc_array[l]);
-				free(str_1);
-				str_1 = ft_strdup(str);
-				free(str);
-				l++;
-			}
-			write(instructions->heredoc_fd, str_1, ft_strlen(str_1));
-			free(str_1);
-		}
-		close(instructions->heredoc_fd);
-		exit(0);
+		if (!ft_strcmp(s, instructions->arr_delimiters[instructions->delimiters_count - 2]))
+			(*a)++;
 	}
 	else
-		waitpid(pid, &pid_status, 0);
-	free(prompt);
-	prompt = NULL;
-	s = NULL;
+		if (!ft_strcmp(s, instructions->arr_delimiters[instructions->delimiters_count - 1]))
+			(*a)++;
+	(*count)++;
+}
+
+void take_inputs_util_2(t_commands *instructions, char *s)
+{
+	char	*string;
+	instructions->heredocs_switch = 1;
+	string = ft_strjoin(s, "\n");
+	if (strlen(s) <= 0)
+	{
+		instructions->heredoc_array[instructions->heredoc_string_count] = ft_strdup(string);
+		instructions->heredoc_string_count++;
+	}
+	else
+	{
+		instructions->heredoc_array[instructions->heredoc_string_count] = ft_strdup(string);
+		instructions->heredoc_string_count++;
+	}
+	free(string);
+}
+
+void	take_inputs_loop_util(t_commands *instructions)
+{
+	int	count;
+	int	a;
+	char	*s;
+	char	*prompt;
+
+	prompt = ft_strdup("> ");
+	a = 0;
+	count = 0;
+	while (count < instructions->delimiters_count)
+	{
+		s = readline(prompt);
+		if (!s)
+			break ;
+		if (ft_strcmp(s, instructions->arr_delimiters[count]) == 0)
+			take_inputs_util_1(&count, instructions, &a, s);
+		else if (instructions->delimiters_count < 2 || (instructions->delimiters_count >= 2 && a > 0))
+			take_inputs_util_2(instructions, s);
+		free(s);
+	}
+}
+
+void sig_default(void)
+{
 	struct sigaction	mysig_restore;
 
 	sigemptyset(&mysig_restore.sa_mask);
@@ -100,6 +89,53 @@ void	take_inputs_loop(t_commands *instructions)
 	mysig_restore.sa_sigaction = signal_handler;
 	sigaction(SIGINT, &mysig_restore, NULL);
 	signal(SIGQUIT, SIG_IGN);
+}
+
+
+void	take_inputs_loop_util_(t_commands *instructions)
+{
+	char *str_1;
+	char *str;
+	int l;
+
+	l = 0;
+	str_1 = ft_strdup(instructions->heredoc_array[0]);
+	l++;
+	while (l < instructions->heredoc_string_count)
+	{
+		str = ft_strjoin(str_1, instructions->heredoc_array[l]);
+		free(str_1);
+		str_1 = ft_strdup(str);
+		free(str);
+		l++;
+	}
+	write(instructions->heredoc_fd, str_1, ft_strlen(str_1));
+	free(str_1);
+}
+
+
+void	take_inputs_loop(t_commands *instructions)
+{
+	int pid;
+	int pid_status;
+
+	struct sigaction	sig_;
+	sig_ = set_signal_quit_ingore();
+	pid = fork();
+	if (pid == 0)
+	{
+		sig_.sa_sigaction = signal_handler_4;
+		sigaction(SIGINT, &sig_, NULL);
+		take_inputs_loop_util(instructions);
+		instructions->heredoc_fd = open("h.txt", O_RDWR | O_TRUNC | O_CREAT , 0666);
+		if (instructions->heredocs_switch)
+			take_inputs_loop_util_(instructions);
+		close(instructions->heredoc_fd);
+		exit(0);
+	}
+	else
+		waitpid(pid, &pid_status, 0);
+	sig_default();
 }
 
 int	take_delimiters(t_commands **instructions, int i)
