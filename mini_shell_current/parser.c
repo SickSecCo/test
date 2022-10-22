@@ -6,7 +6,7 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 19:50:41 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/19 20:56:30 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/22 18:29:49 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,61 +21,51 @@ int	parse(t_bag *bag, char *input, t_var *var)
 	i = 0;
 	bag->commands_count = parse_string_pipe(bag, input);
 	commands_count = bag->commands_count;
+	var->var_execve = malloc(sizeof(char *) * var->count + 1);
+	if (commands_count == -1)
+		return (commands_count);
 	while (++i < commands_count)
 		bag->mid_bag = bag->mid_bag->prev;
 	if (commands_count > 1)
 		bag->mid_bag->pipe_yes_not = 1;
 	k = parse_string_commands(bag->mid_bag, commands_count, var);
-	var->var_execve = malloc(sizeof(char *) * var->count + 1);
 	if (k == -1)
-		return k;
-	else
-		return (0);
+		return (k);
+	return (0);
 }
 
 int	parse_string_pipe(t_bag *bag, char *input)
 {
-	size_t i;
-	int	j;
-	int commands_count;
+	size_t	i;
+	int		j;
 
 	i = 0;
 	j = 0;
-	commands_count = 0;
+	bag->commands_count = 0;
 	while (i <= ft_strlen(input))
 	{
-		if ((input[i] != '|' && input[i] != '\0') || (input[i] ==  '|' && input[i + 1] == '|'))
-		{
+		if ((input[i] != '|' && input[i] != '\0'))
 			i++;
-			if (input[i] ==  '|' && input[i + 1] == '|')
-			{
-				printf("syntax error near unexpected token '|'\n");
-				return(-1);
-			}
+		if (input[i] == '|' && input[i + 1] == '|')
+		{
+			printf("syntax error near unexpected token '|'\n");
+			return (-1);
 		}
 		else if (input[i] == '|')
-		{
-			bag->mid_bag->raw_command = ft_substr(input, j, i - j);
-			bag->mid_bag->next = malloc(sizeof(t_tree));
-			bag->mid_bag->next->prev = bag->mid_bag;
-			bag->mid_bag = bag->mid_bag->next;
-			j = i + 1;
-			i++;
-			commands_count++;
-		}
+			parse_pipe_2(input, bag, &i, &j);
 		else if (i == ft_strlen(input))
 		{
 			bag->mid_bag->raw_command = ft_substr(input, j, i - j);
 			i++;
-			commands_count++;
+			bag->commands_count++;
 		}
 	}
-	return (commands_count);
+	return (bag->commands_count);
 }
 
 int	parse_string_commands(t_tree *bag, int commands_count, t_var *var)
 {
-	int i;
+	int	i;
 	int	j;
 	int	k;
 
@@ -83,28 +73,7 @@ int	parse_string_commands(t_tree *bag, int commands_count, t_var *var)
 	{
 		i = 0;
 		bag = initialize_instructions(bag);
-		while (bag->raw_command[i] == ' ')
-			i++;
-		j = i;
-		while (bag->raw_command[i] != ' ' && bag->raw_command[i] != '\0')
-			i++;
-		bag->instructions->command = ft_substr(bag->raw_command, j, i - j);
-		if (!ft_strcmp(bag->instructions->command, "echo"))
-		{
-			while (bag->raw_command[i] == ' ')
-				i++;
-			if (bag->raw_command[i] == '-' && bag->raw_command[i + 1] == 'n')
-			{
-				bag->instructions->echo_option = 1;
-				i += 2;
-			}
-		}
-		while (bag->raw_command[i] == ' ')
-			i++;
-		j = i;
-		while (bag->raw_command[i] != '\0')
-			i++;
-		bag->instructions->argument = ft_substr(bag->raw_command, j, i - j);
+		ft_arg_split(bag, &i, &j);
 		k = check_quotes(bag->instructions);
 		if (!ft_strcmp(bag->instructions->command, "unset"))
 			check_arguments_unset(var, bag);
@@ -118,64 +87,47 @@ int	parse_string_commands(t_tree *bag, int commands_count, t_var *var)
 	if (k != -1)
 		return (0);
 	else
-		return k;
+		return (k);
+}
+
+void	ft_sing_quote(t_index *index, t_commands *instruction)
+{
+	index->type = 0;
+	index->count++;
+	if (index->count == 1)
+	{
+		instruction->quote_flag[index->j] = 1;
+		instruction->quote_start[index->j] = index->i;
+	}
+	if (index->count == 2)
+	{
+		instruction->quote_end[index->j] = index->i;
+		index->j++;
+		index->count = 0;
+		index->type = -1;
+		instruction->quote_count++;
+	}
 }
 
 int	check_quotes(t_commands *instruction)
 {
-	int		i;
-	int		j;
-	int		count;
-	int		type;
+	t_index	*index;
 
-	i = 0;
-	j = 0;
-	count = 0;
-	type = -1;
-	while (instruction->argument[i])
+	index = ft_index();
+	while (instruction->argument[index->i])
 	{
-		if (instruction->argument[i] == '\'' && type != 1)
-		{
-			type = 0;
-			count++;
-			if (count == 1)
-			{
-				instruction->quote_flag[j] = 1;
-				instruction->quote_start[j] = i;
-			}
-			if (count == 2)
-			{
-				instruction->quote_end[j] = i;
-				j++;
-				count = 0;
-				type = -1;
-				instruction->quote_count++;
-			}
-		}
-		else if (instruction->argument[i] == '\"' && type != 0)
-		{
-			type = 1;
-			count++;
-			if (count == 1)
-			{
-				instruction->quote_flag[j] = 2;
-				instruction->quote_start[j] = i;
-			}
-			if (count == 2)
-			{
-				instruction->quote_end[j] = i;
-				j++;
-				count = 0;
-				type = -1;
-				instruction->quote_count++;
-			}
-		}
-		i++;
+		if (instruction->argument[index->i] == '\'' && index->type != 1)
+			ft_sing_quote(index, instruction);
+		else if (instruction->argument[index->i] == '\"' && index->type != 0)
+			ft_mult_quotes(index, instruction);
+		index->i++;
 	}
-	if (count == 1)
+	if (index->count == 1)
 	{
 		printf("ERROR: MISSING QUOTE\n");
+		free(index);
 		return (-1);
 	}
-	return 0;
+	free(index);
+	return (0);
 }

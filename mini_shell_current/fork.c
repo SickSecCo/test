@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	ft_fork(t_bag *bag, t_var *var)
+int	ft_fork(t_bag *bag, t_var *var)
 {
 	int	pid;
 	int	wstatus;
@@ -24,7 +24,8 @@ void	ft_fork(t_bag *bag, t_var *var)
 		set_signal();
 	if (bag->mid_bag->instructions->in_redirect_type
 		|| bag->mid_bag->instructions->heredocs_switch)
-		in_redirect_fork_util(bag->mid_bag->instructions);
+		if (in_redirect_fork_util(bag->mid_bag->instructions) == -1)
+			return (1);
 	pipe(link);
 	pid = fork();
 	if (pid == 0)
@@ -35,6 +36,7 @@ void	ft_fork(t_bag *bag, t_var *var)
 	waitpid(pid, &wstatus, 0);
 	set_env_error(bag, wstatus);
 	fd_backup_(fd_backup, 1);
+	return (0);
 }
 
 int	fork_loop_second_child(t_bag *bag, int fd[], int fd_2[], t_var *var)
@@ -54,6 +56,12 @@ int	fork_loop_second_child(t_bag *bag, int fd[], int fd_2[], t_var *var)
 	}
 	close(fd[1]);
 	close(fd[0]);
+	if (bag->mid_bag->instructions->builtin_yes_not)
+	{
+		if (g_env_error == 1)
+			return (1);
+		return (0);
+	}
 	if (!bag->mid_bag->instructions->builtin_yes_not)
 		execute_command(bag, var);
 	return (127);
@@ -66,7 +74,8 @@ int	fork_loop_first_child(t_bag *bag, int fd[], t_var *var)
 	already_closed = 0;
 	if (bag->mid_bag->instructions->in_redirect_type
 		|| bag->mid_bag->instructions->heredocs_switch)
-		in_redirect_fork_util(bag->mid_bag->instructions);
+		if (in_redirect_fork_util(bag->mid_bag->instructions) == -1)
+			return (1);
 	dup2(fd[1], STDOUT_FILENO);
 	if (is_built_in_check(bag, 0))
 		check_command(bag, var);
@@ -78,6 +87,8 @@ int	fork_loop_first_child(t_bag *bag, int fd[], t_var *var)
 		close(fd[1]);
 		close(fd[0]);
 	}
+	if (bag->mid_bag->instructions->builtin_yes_not)
+		return (0);
 	if (!bag->mid_bag->instructions->builtin_yes_not)
 		execute_command(bag, var);
 	return (127);

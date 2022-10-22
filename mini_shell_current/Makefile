@@ -10,6 +10,7 @@ SOURCES =	minishell\
 			parser\
 			utils\
 			redirections_utils\
+			redirections_2\
 			redirections\
 			built_in\
 			var_handler\
@@ -24,7 +25,16 @@ SOURCES =	minishell\
 			executor_utils_2\
 			executor\
 			parser_utils\
-			signal
+			signal\
+			var_utils\
+			var_utils_2\
+			redirections_utils_2\
+			f_arg_utils\
+			f_arg\
+			parser_2\
+			minishell_utils\
+			minishell_utils_2\
+			minishell_utils_3
 
 DEPENDENCIES = libft/libft.a
 

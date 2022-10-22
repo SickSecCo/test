@@ -43,71 +43,30 @@ int	ft_set_x(t_var *var, int i, char *str)
 
 char	*ft_var2(t_var *var, t_commands *instruction, char *str, int *count)
 {
-	int		*index;
-	char	*dest;
+	t_handler	*han;
+	char		*dest;
 
-	index = malloc(sizeof(int) * 5);
-	index[0] = 0;
-	index[1] = 0;
-	index[2] = 0;
-	index[3] = 0;
-	dest = malloc(sizeof(char) * (ft_strlen(instruction->output_arg) + 150));
-	while (str[index[0]] != '\0')
+	han = malloc(sizeof(t_handler));
+	init_handle(&han, instruction);
+	while (str[han->index[0]] != '\0')
 	{
-		index[4] = 0;
-		if ((instruction->quote_flag[index[2]] != 1
-				|| index[0] < instruction->quote_start[index[2]])
-			&& (str[index[0]] == '$' && str[index[0] + 1] != ' '))
+		han->index[4] = 0;
+		if ((instruction->quote_flag[han->index[2]] != 1
+				|| han->index[0] < instruction->quote_start[han->index[2]])
+			&& (str[han->index[0]] == '$' && str[han->index[0] + 1] != ' '))
 		{
-			if (str[index[0]] == '$' && str[index[0] + 1] == '?')
-			{
-				index[1] += figure_count();
-				ft_putnbr(&dest, index[1], env_error, 0);
-				index[0] += 2;
-				index[1]++;
-			}
-			else if (count[index[3]] == var->count)
-			{
-				if (str[index[0]] == '$' && str[index[0] + 1] == '\0')
-				{
-					dest[index[1]] = str[index[0]];
-					index[1]++;
-				}
-				index[0]++;
-				while ((str[index[0]] >= 48 && str[index[0]] <= 57)
-					|| (str[index[0]] >= 65 && str[index[0]] <= 90)
-					|| (str[index[0]] >= 97 && str[index[0]] <= 122))
-					index[0]++;
-				if (str[index[0]] == '\0')
-					break ;
-				else
-					index[3]++;
-			}
-			else
-			{
-				index[0]++;
-				while ((str[index[0]] >= 48 && str[index[0]] <= 57)
-					|| (str[index[0]] >= 65 && str[index[0]] <= 90)
-					|| (str[index[0]] >= 97 && str[index[0]] <= 122))
-					index[0]++;
-				while (var->var_value[count[index[3]]][index[4]] != '\0')
-				{	
-					dest[index[1]] = var->var_value[count[index[3]]][index[4]];
-					index[1]++;
-					index[4]++;
-				}
-				index[3]++;
-			}
-			if (index[0] == instruction->quote_end[index[2]] + 1)
-				index[2]++;
+			ft_var_while(&han, str, var, count);
+			if (han->index[0] == instruction->quote_end[han->index[2]] + 1)
+				han->index[2]++;
 			continue ;
 		}
-		dest[index[1]] = str[index[0]];
-		index[1]++;
-		index[0]++;
+		ft_advance(&han, str, instruction);
 	}
-	dest[index[1]] = '\0';
-	free(index);
+	han->dest[han->index[1]] = '\0';
+	dest = ft_strdup(han->dest);
+	free(han->dest);
+	free(han->index);
+	free(han);
 	return (dest);
 }
 

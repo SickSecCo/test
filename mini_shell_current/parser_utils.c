@@ -6,7 +6,7 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 19:50:38 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/19 21:17:16 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/22 16:54:31 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	figure_count(void)
 	int	k;
 	int	j;
 
-	k = env_error;
+	k = g_env_error;
 	j = 0;
 	while (k / 10 > 0)
 	{

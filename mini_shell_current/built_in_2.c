@@ -6,7 +6,7 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 19:50:02 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/19 20:00:12 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/22 16:52:51 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	ft_cd(t_bag *bag, t_var *var)
 	{
 		printf("No such file or directory\n");
 		bag->err_env_err = 1;
-		env_error = 1;
+		g_env_error = 1;
 	}
 	else
 		ft_cd_util(var);

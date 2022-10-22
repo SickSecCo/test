@@ -6,13 +6,13 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 19:50:13 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/20 16:02:42 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/22 16:53:12 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	in_redirect_fork_util(t_commands *instructions)
+int	in_redirect_fork_util(t_commands *instructions)
 {
 	int	fd_;
 
@@ -27,18 +27,18 @@ void	in_redirect_fork_util(t_commands *instructions)
 		else
 		{
 			printf("%s: No such file or directory\n", instructions->file_input);
-			return ;
+			g_env_error = 1;
+			return (-1);
 		}
 	}
 	else if (instructions->in_redirect_type == 2)
 	{
 		instructions->heredoc_fd = open("h.txt", O_RDONLY, 0666);
 		if (instructions->heredoc_fd)
-		{
 			dup2(instructions->heredoc_fd, STDIN_FILENO);
-			close(instructions->heredoc_fd);
-		}
+		close(instructions->heredoc_fd);
 	}
+	return (0);
 }
 
 void	read_util(t_bag *bag, int fd[])

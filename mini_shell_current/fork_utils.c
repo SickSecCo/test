@@ -63,7 +63,8 @@ void	set_signal(void)
 
 void	set_env_error(t_bag *bag, int wstatus)
 {
-	if (env_error != 130 && env_error != 131)
-		env_error = WEXITSTATUS(wstatus);
+	if (g_env_error == 0
+		|| (g_env_error != 130 && g_env_error != 131))
+		g_env_error = WEXITSTATUS(wstatus);
 	bag->err_env_err = 1;
 }

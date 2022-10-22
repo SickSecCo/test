@@ -29,7 +29,7 @@ int	ft_export_util(t_var *var, t_bag *bag, int i, int j)
 		else
 		{
 			bag->err_env_err = 1;
-			env_error = 1;
+			g_env_error = 1;
 		}
 		i++;
 	}
@@ -96,7 +96,7 @@ void	ft_env(t_var *var)
 			printf("%s=%s\n", var->var_name[i], var->var_value[i]);
 		i++;
 	}
-	env_error = 0;
+	g_env_error = 0;
 }
 
 void	ft_pwd(void)

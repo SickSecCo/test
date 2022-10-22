@@ -83,4 +83,5 @@ void	check_command(t_bag *bag, t_var *var)
 		free(var);
 		exit(0);
 	}
+	return ;
 }

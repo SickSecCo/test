@@ -88,16 +88,34 @@ typedef struct s_fork
 	int pid_ex_status;
 	int pid_1_ex_status;
 	int count;
+	int	commands_count;
 }	t_fork;
-extern int env_error;
+
+typedef struct s_index
+{
+	int	i;
+	int	j;
+	int	count;
+	int	type;
+}	t_index;
 
 
+typedef struct s_handler
+{
+	int 	*index;
+	char	*dest;
+}	t_handler;
 
-void	main_loop(struct sigaction sig, char **envp);
+typedef struct s_fd
+{
+	int	fd[2];
+	int	fd_2[2];
+	int	fd_backup[2];
+}	t_fd;
+
+extern int g_env_error;
 
 int		take_delimiters(t_commands **instructions, int i);
-
-int		double_min_multiple_files(t_commands **instructions, int i);
 
 int		ft_strcmp(char *s1, char *s2);
 
@@ -109,9 +127,7 @@ int		check_quotes(t_commands *instruction);
 
 void	ft_check_redi(t_commands *instructions);
 
-int		ft_min_single_file(t_commands **instructions, int i);
-
-int		ft_min_multiple_files(t_commands **instructions, int i);
+int		ft_min_single_file(t_commands **instructions, int i, char *str);
 
 int		multiple_file(char *input);
 
@@ -149,7 +165,7 @@ int		check_inputs(t_var *var, char *input);
 
 int		parse(t_bag *bag, char *input, t_var *var);
 
-void	ft_fork(t_bag *bag, t_var *var);
+int	ft_fork(t_bag *bag, t_var *var);
 
 void	set_termios(int code);
 
@@ -199,7 +215,7 @@ int		execute_command(t_bag *bag, t_var *var);
 
 void	read_util(t_bag *bag, int fd[]);
 
-void	in_redirect_fork_util(t_commands *instructions);
+int	in_redirect_fork_util(t_commands *instructions);
 
 int		fork_loop_second_child(t_bag *bag, int fd[], int fd_2[], t_var *var);
 
@@ -222,5 +238,59 @@ int		is_built_in_check(t_bag *bag, int code);
 int		fork_single_command(int link[], t_bag *bag, t_var *var);
 
 void	fd_backup_(int fd[], int i);
+
+void	ft_advance(t_handler ** handle, char *str, t_commands *instruction);
+
+void	init_handle(t_handler **handle, t_commands *instruction);
+
+void	ft_int_handle(char *dest, int *index);
+
+void	ft_no_name(char *dest, char *str, int *index);
+
+void    ft_name(char *dest, t_var *var, int *index, int *count);
+
+void	ft_go(char *str, int *index);
+
+void    ft_var_while(t_handler **handle, char *str, t_var *var, int *count);
+
+struct sigaction	set_signal_quit_ignore(void);
+
+void	take_inputs_loop(t_commands *instructions);
+
+void	sig_default(void);
+
+void	ft_second(t_commands *instruction, char *input, char **temp, int **index);
+
+void	ft_first(char *input, int **index);
+
+void	ft_third(t_commands *instruction, char *input, char **temp, int **index);
+
+void	ft_cpy(char **temp, int **index, char *input);
+
+void	take_inputs_loop_util(t_commands *instructions);
+
+void	ft_mix(t_commands *instruction, char *input, char **temp, int **index);
+
+void	ft_maj_if(t_commands *instructions, char *file, int **index, char *str);
+
+void	ft_min_if(t_commands *instructions, int **index, char *str);
+
+void	min_single_file_2(t_commands **instructions, int i, int j, int fd);
+
+void	parse_pipe_2(char *input, t_bag *bag, size_t *i, int *j);
+
+int	ft_echo_option(t_tree *bag, int i);
+
+void	ft_arg_split(t_tree *bag, int *i, int *j);
+
+t_index	*ft_index(void);
+
+void	ft_mult_quotes(t_index *index, t_commands *instruction);
+
+t_bag	*bag_initialize(struct sigaction sig);
+
+void	fork_multiple_commands(t_bag *bag, t_var *var, int commands_count);
+
+void	fork_second_parent(t_fd *fd, t_bag *bag, t_var *var, t_fork *f_stats);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: fgiulian <fgiulian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/19 19:50:50 by fgiulian          #+#    #+#             */
-/*   Updated: 2022/10/19 21:18:13 by fgiulian         ###   ########.fr       */
+/*   Updated: 2022/10/22 16:54:52 by fgiulian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	signal_handler(int code, siginfo_t *siginfo, void *k)
 		rl_replace_line("", 0);
 		rl_on_new_line();
 		rl_redisplay();
-		env_error = 130;
+		g_env_error = 130;
 	}
 }
 
@@ -44,9 +44,9 @@ void	signal_handler_1(int code, siginfo_t *siginfo, void *k)
 	(void)siginfo;
 	(void)k;
 	if (code == SIGINT)
-		env_error = 130;
+		g_env_error = 130;
 	else
-		env_error = 131;
+		g_env_error = 131;
 	write(1, "\n", 1);
 }
 
