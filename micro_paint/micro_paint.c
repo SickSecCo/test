@@ -27,17 +27,21 @@ int	ft_strlen(char const *str)
 	return i;
 }
 
-int print_error(char const *str, int return_value)
+int print_error(char const *str)
 {
-	write(1, str, ft_strlen(str));
-	return return_value;
+	if (str)
+		write(1, str, ft_strlen(str));
+	return 1;
 }
 
-int clear_all(FILE *file, char *painting_table)
+int clear_all(FILE *file, char *painting_table, char *str)
 {
-	fclose(file);
+	if (file)
+		fclose(file);
 	if (painting_table)
 		free(painting_table);
+	if (str)
+		print_error(str);
 	return 1;
 }
 
@@ -47,20 +51,15 @@ int check_zone(t_zone *zone)
 int check_shape(t_shape *shape)
 {return (shape->width > 0.00000000 && shape->height > 0.00000000 && (shape->type == 'r' || shape->type == 'R'));}
 
-int take_params(FILE *file, t_zone *zone)
+char *take_params(FILE *file, t_zone *zone)
 {
 	int scan_result;
 	if ((scan_result = fscanf(file, "%d %d %c\n", &zone->width, &zone->height, &zone->background)) != 3)
-		return 0;
+		return NULL;
 	if (!check_zone(zone))
-		return 0;
+		return NULL;
 	if (scan_result == -1)
-		return 0;
-	return 1;
-}
-
-char *paint_background(t_zone *zone)
-{
+		return NULL;
 	char *painting_table;
 	int i = -1;
 	int zone_area = zone->height * zone->width;
@@ -80,7 +79,17 @@ int check_if_inside(t_shape *shape, float x, float y)
 	return 1;
 }
 
-void draw_shape(char **painting_table, t_shape *shape, t_zone *zone)
+void draw_(t_zone *zone, char *painting_table)
+{
+	int i = -1;
+	while (++i < zone->height)
+	{
+		write(1, painting_table + i * zone->width, zone->width);
+		write(1, "\n", 1);
+	}
+}
+
+void draw_shape(char *painting_table, t_shape *shape, t_zone *zone)
 {
 	int i = -1, j, check;
 	while (++i < zone->height)
@@ -90,12 +99,12 @@ void draw_shape(char **painting_table, t_shape *shape, t_zone *zone)
 		{
 			check = check_if_inside(shape, j, i);
 			if ((shape->type == 'r' && check == 2) || (shape->type == 'R' && check))
-				(*painting_table)[i * zone->width + j] = shape->character;
+				painting_table[i * zone->width + j] = shape->character;
 		}
 	}
 }
 
-int draw__shapes(FILE *file, char **painting_table, t_zone *zone)
+int draw__shapes(FILE *file, t_zone *zone, char *painting_table)
 {
 	t_shape temp;
 	int scan_return;
@@ -110,37 +119,25 @@ int draw__shapes(FILE *file, char **painting_table, t_zone *zone)
 	return 1;
 }
 
-void draw_(char *painting_table, t_zone *zone)
-{
-	int i = -1;
-	while (++i < zone->height)
-	{
-		write(1, painting_table + i * zone->width, zone->width);
-		write(1, "\n", 1);
-	}
-}
-
 int main(int argc, char **argv)
 {
+	FILE *file;
 	t_zone zone;
 	char *painting_table;
-	FILE *file;
 
 	zone.width = 0;
 	zone.height = 0;
 	zone.background = 0;
 	if (argc != 2)
-		return (print_error("Error: argument\n", 1));
+		return (print_error("Error: argument\n"));
 	if (!(file = fopen(argv[1], "r")))
-		return (print_error("Error: Operation file corrupted\n", 1));
-	if (!take_params(file, &zone))
-		return (clear_all(file, painting_table) && print_error("Error: Operation file corrupted\n", 1));
-	if (!(painting_table = paint_background(&zone)))
-		return (clear_all(file, painting_table) && print_error("Error: malloc failed ;( \n", 1));
-	if (!draw__shapes(file, &painting_table, &zone))
-		return (clear_all(file, painting_table) && print_error("Error: Operation file corrupted\n", 1));
-	draw_(painting_table, &zone);
-	clear_all(file, painting_table);
+		return (print_error("Error: Operation file corrupted\n"));
+	if (!(painting_table = take_params(file, &zone)))
+		return (clear_all(file, NULL, "Error: Operation file corrupted\n"));
+	if (!draw__shapes(file, &zone, painting_table))
+		return (clear_all(file, painting_table, "Error: Operation file corrupted\n"));
+	draw_(&zone, painting_table);
+	clear_all(file, painting_table, NULL);
 	return 0;
 }
 

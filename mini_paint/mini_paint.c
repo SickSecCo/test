@@ -27,18 +27,39 @@ int	ft_strlen(char const *str)
 	return i;
 }
 
+int print_error(char  const *str)
+{
+	if (str)
+		write(1, str, ft_strlen(str));
+	return 1;
+}
+
+int clear_all(FILE *file, char *painting_table, char const *str)
+{
+	if (file)
+		fclose(file);
+	if (painting_table)
+		free(painting_table);
+	if (str)
+		print_error(str);
+	return 1;
+}
+
 char *take_params_and_zone(FILE *file, t_zone *zone)
 {
-	int i = -1;
-	char *temp;
-	if ((fscanf(file, "%d %d %c\n", &zone->width, &zone->height, &zone->background)) != 3)
+	int scan_result;
+	if ((scan_result = fscanf(file, "%d %d %c\n", &zone->width, &zone->height, &zone->background)) != 3)
 		return NULL;
 	if (zone->width <= 0 || zone->width > 300 || zone->height <= 0 || zone->height > 300)
 		return NULL;
-	int k = zone->width * zone->height;
-	if (!(temp = malloc(sizeof(char) * k)))
+	if (scan_result == -1)
 		return NULL;
-	while (++i < k)
+	char *temp;
+	int i = -1;
+	int zone_area = zone->width * zone->height;
+	if (!(temp = malloc(sizeof(char) * zone_area)))
+		return NULL;
+	while (++i < zone_area)
 		temp[i] = zone->background;
 	return temp;
 }
@@ -54,6 +75,16 @@ int	is_in_circle(float x, float y, t_shape *shape)
 		return 1;
 	}
 	return 0;
+}
+
+void draw_(t_zone *zone, char *painting_table)
+{
+	int i = -1;
+	while (++i < zone->height)
+	{
+		write(1, painting_table + i * zone->width, zone->width);
+		write(1, "\n", 1);
+	}
 }
 
 void draw_shape(t_zone *zone, char *painting_table, t_shape *shape)
@@ -86,35 +117,6 @@ int draw__shapes(FILE *file, t_zone *zone, char *painting_table)
 	return 1;
 }
 
-
-void draw_(t_zone *zone, char *painting_table)
-{
-	int i = -1;
-	while (++i < zone->height)
-	{
-		write(1, painting_table + i * zone->width, zone->width);
-		write(1, "\n", 1);
-	}
-}
-
-int print_error(char  const *str)
-{
-	if (str)
-		write(1, str, ft_strlen(str));
-	return 1;
-}
-
-int clear_all(FILE *file, char *painting_table, char const *str)
-{
-	if (file)
-		fclose(file);
-	if (painting_table)
-		free(painting_table);
-	if (str)
-		print_error(str);
-	return 1;
-}
-
 int main(int argc, char **argv)
 {
 	FILE *file;
@@ -130,7 +132,7 @@ int main(int argc, char **argv)
 		return (print_error("Error: Operation file corrupted\n"));
 	if (!(painting_table = take_params_and_zone(file, &zone)))
 		return (clear_all(file, NULL, "Error: Operation file corrupted\n"));
-	if (!(draw__shapes(file, &zone, painting_table)))
+	if (!draw__shapes(file, &zone, painting_table))
 		return (clear_all(file, painting_table, "Error: Operation file corrupted\n"));
 	draw_(&zone, painting_table);
 	clear_all(file, painting_table, NULL);
