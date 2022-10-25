@@ -31,7 +31,7 @@ char *take_params_and_zone(FILE *file, t_zone *zone)
 {
 	int i = -1;
 	char *temp;
-	if (fscanf(file, "%d %d %c\n", &zone->width, &zone->height, &zone->background));
+	if ((fscanf(file, "%d %d %c\n", &zone->width, &zone->height, &zone->background)) != 3)
 		return NULL;
 	if (zone->width <= 0 || zone->width > 300 || zone->height <= 0 || zone->height > 300)
 		return NULL;

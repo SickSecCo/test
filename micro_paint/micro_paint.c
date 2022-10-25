@@ -17,7 +17,6 @@ typedef struct s_shape
 	float height;
 	char type;
 	char character;
-	struct s_shape *next;
 }	t_shape;
 
 int	ft_strlen(char const *str)
