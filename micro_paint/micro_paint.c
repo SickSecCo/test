@@ -72,9 +72,9 @@ char *take_params(FILE *file, t_zone *zone)
 
 int check_if_inside(t_shape *shape, float x, float y)
 {
-	if (((x < shape->x || shape->x + shape->width < x) || y < shape->y) || shape->y + shape->height < y)
+	if (x < shape->x || x > shape->x + shape->width || y < shape->y || y > shape->y + shape->height)
 		return 0;
-	if ((x - shape->x < 1.00000000 || shape->x + shape->width - x < 1.00000000) || (y - shape->y < 1.00000000 || shape->y + shape->height - y < 1.00000000))
+	if (x < shape->x + 1.00000000 || x > shape->x + shape->width + 1.00000000 || y < shape->y + 1.00000000 || y > shape->y + shape->height + 1.00000000)
 		return 2;
 	return 1;
 }
@@ -89,6 +89,23 @@ void draw_(t_zone *zone, char *painting_table)
 	}
 }
 
+
+/*typedef struct s_zone
+{
+	int width;
+	int height;
+	char background;
+}	t_zone;
+
+typedef struct s_shape
+{
+	float x;
+	float y;
+	float radius;
+	char type;
+	char character;
+}	t_shape;
+*/
 void draw_shape(char *painting_table, t_shape *shape, t_zone *zone)
 {
 	int i = -1, j, check;
