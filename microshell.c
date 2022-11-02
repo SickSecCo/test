@@ -36,8 +36,10 @@ int last_command(char **argv, char **envp, int i, int *tmp)
 	int pid;
 	pid = fork();
 	if (!pid)
+	{
 		if (exec(argv, envp, i, *tmp))
 			return 1;
+	}
 	else
 	{
 		close(*tmp);
@@ -62,7 +64,7 @@ int command_exec(char **argv, char **envp, int i, int *tmp)
 	}
 	else
 	{
-		close(tmp);
+		close(*tmp);
 		close(fd[1]);
 		*tmp = fd[0];
 	}
@@ -73,18 +75,18 @@ int main(int argc, char **argv, char **envp)
 {
 	(void) argc;
 	int temp = dup(0);
-	int i = -1;
+	int i = 0;
 	while (argv[i] && argv[i + 1])
 	{
-		argv = &argv[i + 2];
-		i = -1;
-		while (argv[++i] && strcmp(argv[i], "|") &&  strcmp(argv[i], ";"));
-		i += 1;
-		if (strcmp(argv[0], "cd"))
+		argv = &argv[i + 1];
+		i = 0;
+		while (argv[i] && strcmp(argv[i], "|") &&  strcmp(argv[i], ";"))
+			i++;
+		if (!strcmp(argv[0], "cd"))
 			cd_builtin(argv, i);
-		else if (i != 0 && (!strcmp(argv[i], ";") || !argv[i]))
+		else if (i != 0 && (!argv[i] || !strcmp(argv[i], ";")))
 			last_command(argv, envp, i, &temp);
-		else if (i != 0 && strcmp(argv[i], "|"))
+		else if (i != 0 && !strcmp(argv[i], "|"))
 			command_exec(argv, envp, i, &temp);
 	}
 	close(temp);
